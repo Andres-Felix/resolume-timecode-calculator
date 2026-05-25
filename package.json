@@ -1,0 +1,25 @@
+{
+  "name": "resolume-timecode-calculator",
+  "version": "1.0.0",
+  "description": "A Resolume Arena plugin to calculate duration between two timecode offsets with support for multiple frame rates",
+  "main": "timecodeCalculator.js",
+  "scripts": {
+    "test": "node test.js",
+    "example": "node example.js"
+  },
+  "keywords": [
+    "resolume",
+    "arena",
+    "timecode",
+    "calculator",
+    "plugin",
+    "duration",
+    "frame-rate"
+  ],
+  "author": "Andres-Felix",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Andres-Felix/resolume-timecode-calculator"
+  }
+}

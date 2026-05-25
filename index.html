@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Timecode Duration Calculator</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 450px;
+      width: 100%;
+      background: #1a1a1a;
+      border: 2px solid #ff6b00;
+      border-radius: 8px;
+      padding: 30px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 107, 0, 0.2);
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 10px;
+      color: #ff6b00;
+      text-align: center;
+    }
+
+    .subtitle {
+      font-size: 12px;
+      color: #aaa;
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 12px;
+      color: #ccc;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 12px;
+      background: #2a2a2a;
+      color: #fff;
+      border: 1px solid #444;
+      border-radius: 4px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: #ff6b00;
+      box-shadow: 0 0 8px rgba(255, 107, 0, 0.3);
+    }
+
+    input::placeholder {
+      color: #666;
+    }
+
+    select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ff6b00' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 20px;
+      padding-right: 40px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #ff6b00 0%, #ff8c00 100%);
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background: linear-gradient(135deg, #ff8c00 0%, #ffa500 100%);
+      box-shadow: 0 5px 20px rgba(255, 107, 0, 0.4);
+      transform: translateY(-2px);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .result {
+      margin-top: 25px;
+      padding: 20px;
+      background: linear-gradient(135deg, rgba(255, 107, 0, 0.1) 0%, rgba(255, 140, 0, 0.05) 100%);
+      border: 2px solid #ff6b00;
+      border-radius: 4px;
+      text-align: center;
+      display: none;
+      animation: slideIn 0.3s ease;
+    }
+
+    .result.show {
+      display: block;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .result-label {
+      font-size: 11px;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .result-value {
+      font-size: 36px;
+      font-weight: bold;
+      color: #ff6b00;
+      font-family: 'Courier New', monospace;
+      margin-bottom: 8px;
+    }
+
+    .result-unit {
+      font-size: 12px;
+      color: #aaa;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .error {
+      color: #ff4444;
+      background: rgba(255, 68, 68, 0.1);
+      border: 1px solid #ff4444;
+      padding: 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      display: none;
+      margin-top: 15px;
+    }
+
+    .error.show {
+      display: block;
+    }
+
+    .info {
+      font-size: 11px;
+      color: #666;
+      margin-top: 15px;
+      text-align: center;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>⏱ Timecode Calculator</h1>
+    <p class="subtitle">Resolume Arena Plugin</p>
+
+    <div class="form-group">
+      <label for="frameRate">Frame Rate</label>
+      <select id="frameRate">
+        <option value="24">24 fps (Film)</option>
+        <option value="25">25 fps (PAL)</option>
+        <option value="29.97">29.97 fps (NTSC)</option>
+        <option value="30" selected>30 fps (NTSC Non-Drop)</option>
+        <option value="50">50 fps (PAL HD)</option>
+        <option value="59.94">59.94 fps (NTSC HD)</option>
+        <option value="60">60 fps (HD)</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="startTimecode">Start Timecode</label>
+      <input type="text" id="startTimecode" placeholder="HH:MM:SS:FF" value="00:00:00:00">
+    </div>
+
+    <div class="form-group">
+      <label for="endTimecode">End Timecode</label>
+      <input type="text" id="endTimecode" placeholder="HH:MM:SS:FF" value="00:00:10:00">
+    </div>
+
+    <button onclick="calculateDuration()">Calculate Duration</button>
+
+    <div id="error" class="error"></div>
+
+    <div id="result" class="result">
+      <div class="result-label">Duration</div>
+      <div class="result-value" id="resultValue">0.00</div>
+      <div class="result-unit">seconds</div>
+    </div>
+
+    <div class="info">
+      Format: HH:MM:SS:FF<br>
+      (hours:minutes:seconds:frames)
+    </div>
+  </div>
+
+  <script>
+    /**
+     * TimecodeCalculator - Core calculation logic
+     */
+    class TimecodeCalculator {
+      constructor() {
+        this.supportedFrameRates = [24, 25, 29.97, 30, 50, 59.94, 60];
+        this.frameRate = 30;
+      }
+
+      setFrameRate(fps) {
+        if (!this.supportedFrameRates.includes(fps)) {
+          throw new Error(`Unsupported frame rate: ${fps}`);
+        }
+        this.frameRate = fps;
+      }
+
+      timecodeToFrames(timecode) {
+        const parts = timecode.split(':');
+        if (parts.length !== 4) {
+          throw new Error('Invalid format. Use HH:MM:SS:FF');
+        }
+
+        const hours = parseInt(parts[0], 10);
+        const minutes = parseInt(parts[1], 10);
+        const seconds = parseInt(parts[2], 10);
+        const frames = parseInt(parts[3], 10);
+
+        if (isNaN(hours) || isNaN(minutes) || isNaN(seconds) || isNaN(frames)) {
+          throw new Error('Invalid timecode. All values must be numbers.');
+        }
+
+        if (minutes >= 60 || seconds >= 60 || frames >= this.frameRate) {
+          throw new Error(`Invalid values. Minutes/Seconds <60, Frames <${Math.ceil(this.frameRate)}`);
+        }
+
+        const totalFrames = (hours * 3600 * this.frameRate) +
+                           (minutes * 60 * this.frameRate) +
+                           (seconds * this.frameRate) +
+                           frames;
+        return totalFrames;
+      }
+
+      calculateDuration(startTimecode, endTimecode) {
+        const startFrames = this.timecodeToFrames(startTimecode);
+        const endFrames = this.timecodeToFrames(endTimecode);
+        const differenceFrames = Math.abs(endFrames - startFrames);
+        const durationSeconds = differenceFrames / this.frameRate;
+        return Math.round(durationSeconds * 100) / 100;
+      }
+    }
+
+    // Initialize calculator
+    const calculator = new TimecodeCalculator();
+
+    function calculateDuration() {
+      const errorDiv = document.getElementById('error');
+      const resultDiv = document.getElementById('result');
+
+      errorDiv.classList.remove('show');
+      resultDiv.classList.remove('show');
+
+      try {
+        const frameRate = parseFloat(document.getElementById('frameRate').value);
+        const startTimecode = document.getElementById('startTimecode').value.trim();
+        const endTimecode = document.getElementById('endTimecode').value.trim();
+
+        calculator.setFrameRate(frameRate);
+        const duration = calculator.calculateDuration(startTimecode, endTimecode);
+
+        document.getElementById('resultValue').textContent = duration.toFixed(2);
+        resultDiv.classList.add('show');
+      } catch (error) {
+        errorDiv.textContent = '❌ ' + error.message;
+        errorDiv.classList.add('show');
+      }
+    }
+
+    // Allow Enter key to calculate
+    document.getElementById('startTimecode').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') calculateDuration();
+    });
+    document.getElementById('endTimecode').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') calculateDuration();
+    });
+
+    // Initial calculation on load
+    window.addEventListener('load', () => {
+      calculateDuration();
+    });
+  </script>
+</body>
+</html>
